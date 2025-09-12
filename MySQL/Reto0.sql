@@ -1,4 +1,5 @@
 create database examen;
+use examen;
 
 create table Unit(
 id integer not null primary key,
@@ -24,5 +25,8 @@ create table callForExam(
 Ecall varchar (35) not null primary key,
 descripcion varchar(80),
 Edate date,
-course varchar(10)
+course varchar(10),
+idS integer not null,
+foreign key (idS) references Statement(id)
 );
+
