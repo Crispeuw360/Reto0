@@ -12,7 +12,7 @@ package model;
 public class Statement {
     private int id;
     private String description;
-    private Level level;
+    private Level level;      
     private boolean availability;
     private String ruta;
     
