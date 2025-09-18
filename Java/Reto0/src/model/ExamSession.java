@@ -6,6 +6,7 @@
 package model;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 /**
  *
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 public class ExamSession {
     private String statement;
     private String description;
-    private LocalDate date;
+    private Date date;
     private String course; 
     
     public ExamSession(){
@@ -24,7 +25,7 @@ public class ExamSession {
         this.course="";
     }
     
-    public ExamSession(String statement,String description,LocalDate date,String course){
+    public ExamSession(String statement,String description,Date date,String course){
         this.statement=statement;
         this.description=description;
         this.date=date;
@@ -47,11 +48,11 @@ public class ExamSession {
         this.description = description;
     }
 
-    public LocalDate getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
