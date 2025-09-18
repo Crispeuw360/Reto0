@@ -8,3 +8,5 @@ Java/Reto0/nbproject/project.properties
 Java/Reto0/nbproject/project.xml
 Java/Reto0/nbproject/configs/Run_as_WebStart.properties
 Java/Reto0/nbproject/configs/Run_in_Browser.properties
+/nbproject/private/
+/Java/nbproject/private/

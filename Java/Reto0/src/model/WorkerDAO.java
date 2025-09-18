@@ -7,6 +7,7 @@ package model;
 import java.time.LocalDate;
 import java.util.Map;
 
+
 /**
  * Interface for managing workers, dealerships, clients, and models.
  */
