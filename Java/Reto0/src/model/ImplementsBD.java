@@ -102,7 +102,7 @@ public class ImplementsBD implements WorkerDAO {
      *
      * @return Map of all workers keyed by username
      */
-    public Map<String, Worker> getWorkers() {
+    public Map<String, Session> getSessions() {
         ResultSet rs = null;
         Worker worker;
         Map<String, Worker> workers = new TreeMap<>();
@@ -139,7 +139,7 @@ public class ImplementsBD implements WorkerDAO {
      * @param cardealer The dealership whose models to retrieve
      * @return Map of models keyed by model name
      */
-    public Map<String, Unit> getUnits(CarDealership cardealer) {
+    public Map<String, Unit> getUnits(Unit cardealer) {
         ResultSet rs = null;
         Model model;
         Map<String, Model> models = new TreeMap<>();
@@ -213,7 +213,7 @@ public class ImplementsBD implements WorkerDAO {
      * @param worker The username to search for
      * @return The Worker object if found, null otherwise
      */
-    public Worker getWorker(String worker) {
+    public Session getSession(String worker) {
         Worker foundWorker = null;
         this.openConnection();
 
@@ -246,7 +246,7 @@ public class ImplementsBD implements WorkerDAO {
      * @param modelName The name of the model to retrieve
      * @return The Model object if found, null otherwise
      */
-    public Model getModel(String modelName) {
+    public Unit getUnit(String modelName) {
         Model foundModel = null;
         this.openConnection();
 
@@ -309,7 +309,7 @@ public class ImplementsBD implements WorkerDAO {
      * @param model The model to create
      * @return true if creation was successful, false otherwise
      */
-    public boolean createUnit(Model model) {
+    public boolean createUnit(Unit model) {
         boolean creado = false;
         this.openConnection();
 
@@ -332,7 +332,7 @@ public class ImplementsBD implements WorkerDAO {
         return creado;
     }
     
-    public boolean createStatement(Model model) {
+    public boolean createStatement(Statement model) {
         boolean creado = false;
         this.openConnection();
 
@@ -361,7 +361,7 @@ public class ImplementsBD implements WorkerDAO {
      * @param worker The worker to authenticate
      * @return The authenticated Worker object if successful, null otherwise
      */
-    public Worker consultStatement(Worker worker) {
+    public Statement consultStatement(Statement worker) {
         Worker foundWorker = null;
         this.openConnection();
 
@@ -394,7 +394,7 @@ public class ImplementsBD implements WorkerDAO {
      * @return Map of all clients keyed by username
      */
     @Override
-    public Map<String, Client> consultStatementsByUnit() {
+    public Map<String, Statement> consultStatementsByUnit() {
         ResultSet rs = null;
         Client client;
         Map<String, Client> clientsList = new TreeMap<>();
@@ -423,40 +423,6 @@ public class ImplementsBD implements WorkerDAO {
         return clientsList;
     }
     
-
-    /**
-     * Retrieves all models for a specific worker's dealership.
-     *
-     * @param worker The worker whose dealership's models to retrieve
-     * @return Map of models keyed by model name
-     */
-    public Map<String, Model> getModels(Worker worker) {
-        ResultSet rs = null;
-        Model model;
-        Map<String, Model> models = new TreeMap<>();
-        this.openConnection();
-        try {
-            stmt = con.prepareStatement(SQLMODELS);
-            stmt.setInt(1, worker.getId_car_dealer());
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                model = new Model();
-                model.setId_car_dealer(rs.getInt("id_car_dealer"));
-                model.setMark(rs.getString("mark"));
-                model.setName_model(rs.getString("name_model"));
-                model.setPrice(rs.getDouble("price"));
-                model.setStock(rs.getInt("stock"));
-                models.put(model.getName_model(), model);
-            }
-            rs.close();
-            stmt.close();
-            con.close();
-        } catch (SQLException e) {
-            System.out.println("Error de SQL");
-            e.printStackTrace();
-        }
-        return models;
-    }
 
     
 }
