@@ -6,37 +6,38 @@
 package model;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 /**
  *
  * @author pablo
  */
 public class ExamSession {
-    private String statement;
+    private String session;
     private String description;
-    private LocalDate date;
+    private Date date;
     private String course; 
     
     public ExamSession(){
-        this.statement="";
+        this.session="";
         this.description="";
         this.date=null;
         this.course="";
     }
     
-    public ExamSession(String statement,String description,LocalDate date,String course){
-        this.statement=statement;
+    public ExamSession(String session,String description,Date date,String course){
+        this.session=session;
         this.description=description;
         this.date=date;
         this.course=course;
     }
 
-    public String getStatement() {
-        return statement;
+    public String getSession() {
+        return session;
     }
 
-    public void setStatement(String statement) {
-        this.statement = statement;
+    public void setSession(String session) {
+        this.session = session;
     }
 
     public String getDescription() {
@@ -47,11 +48,11 @@ public class ExamSession {
         this.description = description;
     }
 
-    public LocalDate getDate() {
+    public Date getDate() {
         return date;
     }
 
-    public void setDate(LocalDate date) {
+    public void setDate(Date date) {
         this.date = date;
     }
 
@@ -65,7 +66,7 @@ public class ExamSession {
 
     @Override
     public String toString() {
-        return "ExamSession{" + "statement=" + statement + ", description=" + description + ", date=" + date + ", course=" + course + '}';
+        return "ExamSession{" + "session=" + session + ", description=" + description + ", date=" + date + ", course=" + course + '}';
     }
 
     
