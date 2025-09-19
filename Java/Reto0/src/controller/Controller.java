@@ -5,6 +5,7 @@
  */
 package controller;
 
+import model.TeachingUnit;
 import model.WorkerDAO;
 
 /**
@@ -14,4 +15,7 @@ import model.WorkerDAO;
 public class Controller {
     WorkerDAO dao = (WorkerDAO) new model.ImplementsBD();
     
+     public boolean createUnit(TeachingUnit unit){
+         return dao.createUnit(unit);
+     }
 }
