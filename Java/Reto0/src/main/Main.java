@@ -4,7 +4,10 @@
  * and open the template in the editor.
  */
 package main;
+import controller.Controller;
+import model.TeachingUnit;
 import utilidades.Utilidades;
+
 /**
  *
  * @author pablo
@@ -17,7 +20,7 @@ public class Main {
         return menu;
     }
     public static void main(String[] args) {
-        
+        Controller Lcontroler= new Controller();
         int menu = 0;
         do {
             menu=menuM();
@@ -26,7 +29,7 @@ public class Main {
                     System.out.println("Bye!");
                     break;
                 case 1:
-                    
+                    CreateUnit(Lcontroler);
                     break;
                 case 2:
                     
@@ -48,5 +51,33 @@ public class Main {
                     break;
             }
         }while (menu != 0);
+    }
+
+    private static void CreateUnit(Controller Lcontroler) {
+        int id;
+        String acronym, title, evaluation, desc;
+        char again='Y';
+        do{
+        System.out.println("Input an ID for the unit");
+        id=Utilidades.leerInt();
+        System.out.println("Input an acronym for the unit");
+        acronym=Utilidades.introducirCadena();
+        System.out.println("Input a title for the unit");
+        title=Utilidades.introducirCadena();
+        System.out.println("Input an evaluation for the unit");
+        evaluation=Utilidades.introducirCadena();
+        System.out.println("Input a description for the unit");
+        desc=Utilidades.introducirCadena();
+        
+        TeachingUnit tu =new TeachingUnit(id,acronym,title,evaluation,desc);
+        
+        if (Lcontroler.createUnit(tu)){
+            System.out.println("Unit created Succesfully");
+        }else{
+            System.err.println("An unexpected ERROR ocurred while creating this unit");
+        }
+            System.out.println("Do you want to create aothe unit?(Y/N)");
+            again=Utilidades.leerChar('Y', 'N');
+        }while(again=='Y');
     }
 }

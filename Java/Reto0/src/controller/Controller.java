@@ -5,10 +5,13 @@
  */
 package controller;
 
+import model.WorkerDAO;
+
 /**
  *
  * @author pablo
  */
 public class Controller {
+    WorkerDAO dao = (WorkerDAO) new model.ImplementsBD();
     
 }
