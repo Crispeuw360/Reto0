@@ -42,36 +42,14 @@ public class ImplementsBD implements WorkerDAO {
     private String passwordBD;
 
     // SQL queries
-    final String SQLGETMODELS = "SELECT * FROM model WHERE id_car_dealer = ?";
-    final String SQLGETMODEL = "SELECT * FROM model WHERE name_model = ?";
+    final String SQLINSERTUNIT = "INSERT INTO unit (id, acronim, title, evaluation, description) VALUES(?,?,?,?,?);";
+    final String SQLINSERTSESSION = "INSERT INTO sessionE  (Esession, descripcion, Edate, course) VALUES  (?,?,?,?);";
+    final String SQLINSERTSTATEMENT = "INSERT INTO statement  (id,description,Dlevel,available,path,Esession) VALUES  (?,?,?,?,?,?);";
+    final String SQLINSERTUNIT_STATEMENT = "INSERT INTO unit_statement(idU,idS)   VALUES  (?,?);";
+    
+    final String SQLVIEWSTATEMENTBYID = "SELECT * FROM statement WHERE id IN(SELECT idS FROM unit_statement WHERE idU IN(SELECT id FROM unit WHERE id=?));";
+    final String SQLGETSESSIONFROMSTATEMENT = "SELECT Esession FROM statement WHERE id=?;";
 
-    final String SQLGETWORKERS = " SELECT * FROM worker";
-    final String SQLGETWORKER = "SELECT * FROM worker WHERE user_ = ?";
-    final String SQLGETCOWORKERS = " SELECT * FROM worker WHERE id_car_dealer = ?";
-
-    final String SQLGETDEALER = " SELECT * FROM car_dealership WHERE id_car_dealer = ?";
-    final String SQLGETDEALS = "SELECT * FROM car_dealership";
-
-    final String SQLDELETEMODEL = "DELETE FROM model WHERE name_model = ?";
-    final String SQLDELETEWORKER = "DELETE FROM worker WHERE user_ = ?";
-    final String SQLMODIFYWORKER = "UPDATE worker SET password_ = ?, admin_ = ?, id_car_dealer = ? WHERE user_ = ?";
-
-    final String SQLINSERTWORKER = "INSERT INTO worker (admin_, user_, password_, id_car_dealer) VALUES (?, ?, ?, ?)";
-
-    // kev
-    final String SQLMODELS = "SELECT * FROM model WHERE ID_CAR_DEALER = ?";
-    final String SQLCLIENTS = "SELECT * FROM client_";
-    final String SQLSTOCK = "SELECT STOCK FROM model WHERE NAME_MODEL = ? AND ID_CAR_DEALER = ? ";
-    final String SQLCALL = "{ CALL REGISTER_PURCHASE(?, ?, ?, ?, ?) }";
-
-    // igor
-    final String SQLINSERTCLIENT = "INSERT INTO client_ VALUES ( ?,?,?,?)";
-    final String SQLMODIFICARMODEL = "UPDATE MODEL SET MARK = ?, STOCK = ?, PRICE = ? WHERE NAME_MODEL = ? AND ID_CAR_DEALER = ?";
-
-    // pablo
-    final String SQLINSERTMODEL = "INSERT INTO model VALUES (?,?,?,?,?)";
-    final String SQLLOGIN = "SELECT * FROM worker WHERE user_ = ? AND password_ = ?";
-    final String SQLGETDEALERBYNAME = " SELECT * FROM car_dealership WHERE name_ = ?";
 
     /**
      * Constructs a new ImplementsBD instance and loads database configuration.
@@ -98,103 +76,32 @@ public class ImplementsBD implements WorkerDAO {
         }
     }
 
-    /**
-     * Retrieves all workers from the database.
-     *
-     * @return Map of all workers keyed by username
-     */
-    public Map<String, ExamSession> getSessions() {
-        ResultSet rs = null;
-        ExamSession examSession;
-        Map<String, ExamSession> workers = new TreeMap<>();
-
-        this.openConnection();
-
-        try {
-            stmt = con.prepareStatement(SQLGETWORKERS);
-            rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                examSession = new ExamSession();
-                examSession.setStatement(rs.getString("admin_"));
-                examSession.setCourse(rs.getString("user_"));
-                examSession.setDescription(rs.getString("password_"));
-                examSession.setDate(rs.getDate("id_car_dealer"));
-                workers.put(examSession.getCourse(), examSession);
-            }
-
-            rs.close();
-            stmt.close();
-            con.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return workers;
-    }
-
-
-    /**
-     * Retrieves all units for a specific dealership.
-     *
-     * @param cardealer The dealership whose units to retrieve
-     * @return Map of units keyed by unit name
-     */
-    public Map<String, TeachingUnit> getUnits(TeachingUnit cardealer) {
-        ResultSet rs = null;
-        TeachingUnit unit;
-        Map<String, TeachingUnit> units = new TreeMap<>();
-
-        this.openConnection();
-
-        try {
-            stmt = con.prepareStatement(SQLGETMODELS);
-            stmt.setInt(1, cardealer.getId());
-            rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                unit = new TeachingUnit();
-                unit.setId(rs.getInt("id_car_dealer"));
-                unit.setTitle(rs.getString("mark"));
-                unit.setAcronym(rs.getString("name_model"));
-                unit.setEvaluation(rs.getString("price"));
-                unit.setDescription(rs.getString("stock"));
-                units.put(unit.getTitle(), unit);
-            }
-            rs.close();
-            stmt.close();
-            con.close();
-
-        } catch (SQLException e) {
-            System.out.println("Error de SQL");
-            e.printStackTrace();
-        }
-        return units;
-    }
-
 
     /**
      * Retrieves a examSession by username.
      *
-     * @param worker The username to search for
+     * @param statementid The username to search for
      * @return The Worker object if found, null otherwise
      */
-   /* public Session getSession(String worker) {
-        Worker foundStatement = null;
+    @Override
+    public ExamSession getSessionFromStatement(int statementid) {
+        ExamSession foundSession = null;
         this.openConnection();
 
         try {
-            stmt = con.prepareStatement(SQLGETWORKER);
-            stmt.setString(1, worker);
+            stmt = con.prepareStatement(SQLGETSESSIONFROMSTATEMENT);
+            stmt.setInt(1, statementid);
             ResultSet resultado = stmt.executeQuery();
 
             if (resultado.next()) {
-                boolean admin = resultado.getBoolean("admin_");
-                String userName = resultado.getString("user_");
-                String password = resultado.getString("password_");
-                int idCarDealer = resultado.getInt("id_car_dealer");
+                 
+                
+                String session = resultado.getString("Esession");
+                String description = resultado.getString("descripcion");
+                Date date = resultado.getDate("Edate");
+                String course = resultado.getString("course");
 
-                foundStatement = new Worker(userName, password, admin, idCarDealer);
+                foundSession = new ExamSession(session, description, date, course);
             }
 
             stmt.close();
@@ -203,32 +110,34 @@ public class ImplementsBD implements WorkerDAO {
             System.out.println("Error al verificar credenciales: " + e.getMessage());
         }
 
-        return foundStatement;
-    }*/
+        return foundSession;
+    }
 
     /**
      * Retrieves a unit by name.
      *
-     * @param unitName The name of the unit to retrieve
+     * @param id
      * @return The Model object if found, null otherwise
      */
-    public TeachingUnit getUnit(String unitName) {
-        TeachingUnit foundUnit = null;
+    public Statement getStatementById(int id) {
+        Statement foundStatement = null;
         this.openConnection();
 
         try {
-            stmt = con.prepareStatement(SQLGETMODEL);
-            stmt.setString(1, unitName);
+            stmt = con.prepareStatement(SQLVIEWSTATEMENTBYID);
+            stmt.setInt(1, id);
             ResultSet resultado = stmt.executeQuery();
 
             if (resultado.next()) {
-                int id = resultado.getInt("id");
-                String acronym = resultado.getString("acronym");
-                String title = resultado.getString("title");
-                String evaluation= resultado.getString("evaluation");
-                String description = resultado.getString("description");
-
-                foundUnit = new TeachingUnit(id, acronym, title, evaluation, description);
+                int idS = resultado.getInt("id");
+                String description = resultado.getString("acronym");
+                String titleStr = resultado.getString("Level");
+                boolean avaliable = resultado.getBoolean("avaliable");
+                String path = resultado.getString("path");
+                
+                Level dLevel = Level.valueOf(titleStr.toUpperCase());
+                
+                foundStatement = new Statement(idS, description, dLevel, avaliable, path);
             }
 
             stmt.close();
@@ -237,7 +146,7 @@ public class ImplementsBD implements WorkerDAO {
             System.out.println("Error al obtener el modelo: " + e.getMessage());
         }
 
-        return foundUnit;
+        return foundStatement;
     }
 
     /**
@@ -251,8 +160,8 @@ public class ImplementsBD implements WorkerDAO {
         boolean ok = false;
         this.openConnection();
         try {
-            stmt = con.prepareStatement(SQLINSERTWORKER);
-            stmt.setString(1, session.getStatement());
+            stmt = con.prepareStatement(SQLINSERTSESSION);
+            stmt.setString(1, session.getSession());
             stmt.setString(2, session.getDescription());
             stmt.setDate(3, (Date) session.getDate());
             stmt.setString(4, session.getCourse());
@@ -280,11 +189,11 @@ public class ImplementsBD implements WorkerDAO {
         this.openConnection();
 
         try {
-            stmt = con.prepareStatement(SQLINSERTMODEL);
-            stmt.setString(1, unit.getTitle());
+            stmt = con.prepareStatement(SQLINSERTUNIT);
+            stmt.setInt(1, unit.getId());
             stmt.setString(2, unit.getAcronym());
-            stmt.setString(3, unit.getEvaluation());
-            stmt.setInt(4, unit.getId());
+            stmt.setString(3, unit.getTitle());
+            stmt.setString(4, unit.getEvaluation());
             stmt.setString(5, unit.getDescription());
 
             if (stmt.executeUpdate() > 0) {
@@ -298,16 +207,18 @@ public class ImplementsBD implements WorkerDAO {
         return creado;
     }
     
-    public boolean createStatement(Statement statement) {
+    public boolean createStatement(Statement statement, String session) {
         boolean creado = false;
         this.openConnection();
 
         try {
-            stmt = con.prepareStatement(SQLINSERTMODEL);
+            stmt = con.prepareStatement(SQLINSERTSTATEMENT);
             stmt.setInt(1, statement.getId());
-            stmt.setString(2, statement.getLevel().toString());
-            stmt.setString(3, statement.getDescription());
-            stmt.setString(4, statement.getRuta());
+            stmt.setString(2, statement.getDescription());
+            stmt.setString(3, statement.getLevel().toString());
+            stmt.setBoolean(4, statement.isAvailability());
+            stmt.setString(5, statement.getRuta());
+            stmt.setString(6, session);
 
             if (stmt.executeUpdate() > 0) {
                 creado = true;
