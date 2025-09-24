@@ -21,4 +21,11 @@ public interface WorkerDAO {
     public ExamSession getSessionFromStatement(int statementid);
     
     public Statement getStatementById(int id);
+
+    /**
+     * Retrieves all clients from the database.
+     *
+     * @return Map of all clients keyed by username
+     */
+    Map<String, ExamSession> consultAllSessions();
 }

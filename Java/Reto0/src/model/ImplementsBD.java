@@ -5,15 +5,13 @@
  */
 package model;
 
-import java.sql.CallableStatement;
+
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
@@ -41,13 +39,13 @@ public class ImplementsBD implements WorkerDAO {
     private String userBD;
     private String passwordBD;
 
-    // SQL queries
     final String SQLINSERTUNIT = "INSERT INTO unit (id, acronim, title, evaluation, description) VALUES(?,?,?,?,?);";
     final String SQLINSERTSESSION = "INSERT INTO sessionE  (Esession, descripcion, Edate, course) VALUES  (?,?,?,?);";
     final String SQLINSERTSTATEMENT = "INSERT INTO statement  (id,description,Dlevel,available,path,Esession) VALUES  (?,?,?,?,?,?);";
     final String SQLINSERTUNIT_STATEMENT = "INSERT INTO unit_statement(idU,idS)   VALUES  (?,?);";
     
-    final String SQLVIEWSTATEMENTBYID = "SELECT * FROM statement WHERE id IN(SELECT idS FROM unit_statement WHERE idU IN(SELECT id FROM unit WHERE id=?));";
+    final String SQLGETALLSESSIONS = "SELECT * FROM sessionE;";
+    final String SQLVIEWSTATEMENTBYID = "SELECT * FROM statement WHERE id IN(SELECT idS FROM unit_statement WHERE idU IN(SELECT id FROM unit WHERE id=?));";;
     final String SQLGETSESSIONFROMSTATEMENT = "SELECT Esession FROM statement WHERE id=?;";
 
 
@@ -132,11 +130,10 @@ public class ImplementsBD implements WorkerDAO {
             if (resultado.next()) {
                 int idS = resultado.getInt("id");
                 String description = resultado.getString("acronym");
-                String titleStr = resultado.getString("Level");
+                String levelStr = resultado.getString("Dlevel");
                 boolean avaliable = resultado.getBoolean("avaliable");
                 String path = resultado.getString("path");
-                
-                Level dLevel = Level.valueOf(titleStr.toUpperCase());
+                Level dLevel = Level.valueOf(levelStr);
                 
                 foundStatement = new Statement(idS, description, dLevel, avaliable, path);
             }
@@ -164,7 +161,7 @@ public class ImplementsBD implements WorkerDAO {
             stmt = con.prepareStatement(SQLINSERTSESSION);
             stmt.setString(1, session.getSession());
             stmt.setString(2, session.getDescription());
-            stmt.setDate(3, (Date) session.getDate());
+            stmt.setDate(3, new java.sql.Date(session.getDate().getTime()));
             stmt.setString(4, session.getCourse());
 
             if (stmt.executeUpdate() > 0) {
@@ -270,25 +267,26 @@ public class ImplementsBD implements WorkerDAO {
      *
      * @return Map of all clients keyed by username
      */
-    /*@Override
-    public Map<String, Statement> consultStatementsByUnit() {
+    @Override
+    public Map<String, ExamSession> consultAllSessions() {
         ResultSet rs = null;
-        Client client;
-        Map<String, Client> clientsList = new TreeMap<>();
+        ExamSession session;
+        Map<String, ExamSession> sessionsList = new TreeMap<>();
 
         this.openConnection();
 
         try {
-            stmt = con.prepareStatement(SQLCLIENTS);
+            stmt = con.prepareStatement(SQLGETALLSESSIONS);
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                client = new Client();
-                client.setDni(rs.getString("dni"));
-                client.setEmail(rs.getString("email"));
-                client.setPassword_((rs.getString("password_")));
-                client.setUser_((rs.getString("user_")));
-                clientsList.put(client.getUser_(), client);
+                session= new ExamSession();
+                session.setCourse(rs.getString("course"));
+
+                session.setDate(rs.getDate("Edate"));
+                session.setDescription(rs.getString("descripcion"));
+                session.setSession(rs.getString("Esession"));
+                sessionsList.put(session.getSession(), session);
             }
             rs.close();
             stmt.close();
@@ -297,8 +295,8 @@ public class ImplementsBD implements WorkerDAO {
             System.out.println("Error de SQL");
             e.printStackTrace();
         }
-        return clientsList;
-    }*/
+        return sessionsList;
+    }
     
 
     

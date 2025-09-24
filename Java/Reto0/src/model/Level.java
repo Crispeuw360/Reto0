@@ -10,5 +10,5 @@ package model;
  * @author pablo
  */
 public enum Level {
-    HIGH,MEDIUM,LOW;
+    ALTA, MEDIA, BAJA;
 }

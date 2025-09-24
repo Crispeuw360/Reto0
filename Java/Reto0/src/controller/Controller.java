@@ -8,6 +8,8 @@ package controller;
 import model.TeachingUnit;
 import model.WorkerDAO;
 import model.ExamSession;
+import model.Statement;
+import java.util.Map;
 
 /**
  *
@@ -21,5 +23,17 @@ public class Controller {
      }
      public boolean createSession(ExamSession session){
          return dao.createSession(session);
+     }
+     public boolean createStatement(Statement statement, String session){
+         return dao.createStatement(statement," ");
+     }
+     public ExamSession getSessionFromStatement(int statementid){
+         return dao.getSessionFromStatement(statementid);
+     }
+     public Statement getStatementById(int id){
+         return dao.getStatementById(id);
+     }
+     public Map<String, ExamSession> consultAllSessions(){
+         return dao.consultAllSessions();
      }
 }

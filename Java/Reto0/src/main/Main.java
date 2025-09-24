@@ -5,11 +5,14 @@
  */
 package main;
 import java.time.LocalDate;
+import java.util.Map;
 import java.sql.Date;
 
 import controller.Controller;
 import model.TeachingUnit;
 import model.ExamSession;
+import model.Statement;
+import model.Level;
 import utilidades.Utilidades;
 
 /**
@@ -39,7 +42,7 @@ public class Main {
                     CreateSession(Lcontroler);
                     break;
                 case 3:
-                    
+                    CreateStatement(Lcontroler);
                     break;
                 case 4:
                     
@@ -112,5 +115,45 @@ public class Main {
             System.out.println("Do you want to create another session?(Y/N)");
             again=Utilidades.leerChar('Y', 'N');
         }while(again=='Y');
+    }
+    
+    private static void CreateStatement(Controller Lcontroler) {
+        int id;
+        String description,session,path;
+        Level level;
+        boolean availability;
+        char again='Y';
+        do{
+            System.out.println("Input an ID for the statement");
+            id=Utilidades.leerInt();
+            System.out.println("Input a description for the statement");
+            description=Utilidades.introducirCadena();
+            System.out.println("Input a level for the statement (ALTA, MEDIA, BAJA)");
+            level=Level.valueOf(Utilidades.introducirCadena().toUpperCase());
+            System.out.println("Input availability for the statement (Y/N)");
+            availability=Utilidades.leerChar('Y', 'N') == 'Y';
+            System.out.println("Input a path for the statement");
+            path=Utilidades.introducirCadena();
+            System.out.println("Input a session for the statement");
+            consultAllSessions(Lcontroler);
+            session=Utilidades.introducirCadena();
+
+            Statement statement = new Statement(id, description, level, availability, path);
+
+            if (Lcontroler.createStatement(statement, session)){
+                System.out.println("Statement created Successfully");
+            }else{
+                System.err.println("An unexpected ERROR occurred while creating this statement");
+            }
+            System.out.println("Do you want to create another statement?(Y/N)");
+            again=Utilidades.leerChar('Y', 'N');
+        }while(again=='Y');
+    }
+
+    private static void consultAllSessions(Controller Lcontroler) {
+        Map<String, ExamSession> sessions = Lcontroler.consultAllSessions();
+        for (ExamSession session : sessions.values()) {
+            System.out.println(session);
+        }
     }
 }
