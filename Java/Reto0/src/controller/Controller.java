@@ -7,6 +7,7 @@ package controller;
 
 import model.TeachingUnit;
 import model.WorkerDAO;
+import model.ExamSession;
 
 /**
  *
@@ -17,5 +18,8 @@ public class Controller {
     
      public boolean createUnit(TeachingUnit unit){
          return dao.createUnit(unit);
+     }
+     public boolean createSession(ExamSession session){
+         return dao.createSession(session);
      }
 }

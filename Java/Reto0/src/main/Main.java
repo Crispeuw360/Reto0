@@ -4,8 +4,12 @@
  * and open the template in the editor.
  */
 package main;
+import java.time.LocalDate;
+import java.sql.Date;
+
 import controller.Controller;
 import model.TeachingUnit;
+import model.ExamSession;
 import utilidades.Utilidades;
 
 /**
@@ -32,7 +36,7 @@ public class Main {
                     CreateUnit(Lcontroler);
                     break;
                 case 2:
-                    
+                    CreateSession(Lcontroler);
                     break;
                 case 3:
                     
@@ -77,6 +81,35 @@ public class Main {
             System.err.println("An unexpected ERROR ocurred while creating this unit");
         }
             System.out.println("Do you want to create aothe unit?(Y/N)");
+            again=Utilidades.leerChar('Y', 'N');
+        }while(again=='Y');
+    }
+
+    private static void CreateSession(Controller Lcontroler) {
+        String eSession,description,course;
+        Date date;
+        char again='Y';
+        do{
+        System.out.println("Input an exam session");
+        eSession=Utilidades.introducirCadena();
+        System.out.println("Input a description");
+        description=Utilidades.introducirCadena();
+        System.out.println("Input a course");
+        course=Utilidades.introducirCadena();
+        System.out.println("Input a date (yyyy/MM/dd)");
+        LocalDate localDate = Utilidades.leerFechaAMD();
+
+        // Convertir LocalDate a Date
+        date = Date.valueOf(localDate);
+
+        ExamSession session = new ExamSession(eSession, description, date, course);
+
+        if (Lcontroler.createSession(session)){
+            System.out.println("Session created Successfully");
+        }else{
+            System.err.println("An unexpected ERROR occurred while creating this session");
+        }
+            System.out.println("Do you want to create another session?(Y/N)");
             again=Utilidades.leerChar('Y', 'N');
         }while(again=='Y');
     }
