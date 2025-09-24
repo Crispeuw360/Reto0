@@ -11,3 +11,11 @@ Java/Reto0/nbproject/configs/Run_in_Browser.properties
 /nbproject/private/
 /Java/nbproject/private/
 /Java/Reto0/build/
+/Java/build/
+Java/build.xml
+Java/manifest.mf
+Java/nbproject/build-impl.xml
+Java/nbproject/genfiles.properties
+Java/nbproject/project.properties
+Java/nbproject/project.xml
+Java/Reto0/src/model/config.properties
