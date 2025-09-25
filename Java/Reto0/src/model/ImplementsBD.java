@@ -40,15 +40,19 @@ public class ImplementsBD implements WorkerDAO {
     private String passwordBD;
 
     final String SQLINSERTUNIT = "INSERT INTO unit (id, acronim, title, evaluation, description) VALUES(?,?,?,?,?);";
-    final String SQLINSERTSESSION = "INSERT INTO sessionE  (Esession, descripcion, Edate, course) VALUES  (?,?,?,?);";
-    final String SQLINSERTSTATEMENT = "INSERT INTO statement  (id,description,Dlevel,available,path,Esession) VALUES  (?,?,?,?,?,?);";
-    final String SQLINSERTUNIT_STATEMENT = "INSERT INTO unit_statement(idU,idS)   VALUES  (?,?);";
+    final String SQLINSERTSESSION = "INSERT INTO sessionE  (Esession, descripcion, Edate, course,id_statement) VALUES  (?,?,?,?,?);";
+    final String SQLINSERTSTATEMENT = "INSERT INTO statement  (id,description,Dlevel,available,path) VALUES  (?,?,?,?,?);";
+    final String SQLINSERTUNIT_STATEMENT = "INSERT INTO Unit_statement(idU,idS)   VALUES  (?,?);";
     
-    final String SQLGETALLSESSIONS = "SELECT * FROM sessionE;";
     final String SQLVIEWSTATEMENTBYID = "SELECT * FROM statement WHERE id IN(SELECT idS FROM unit_statement WHERE idU IN(SELECT id FROM unit WHERE id=?));";;
     final String SQLGETSESSIONFROMSTATEMENT = "SELECT Esession FROM statement WHERE id=?;";
     final String SQLCHECKSESSION = "SELECT Esession FROM sessionE WHERE Esession=?;";
+    final String SQLCHECKTEACHINGUNIT = "SELECT id FROM unit WHERE id=?;";
+    final String SQLCHECKSTATEMENT = "SELECT id FROM Statement WHERE id=?;";
 
+    final String SQLGETALLUNITS = "SELECT * FROM unit WHERE id=?;";
+    final String SQLGETALLSESSIONS = "SELECT * FROM sessionE;";
+    final String SQLGETALLSTATEMENTS = "SELECT * FROM statement WHERE id=?;";
 
     /**
      * Constructs a new ImplementsBD instance and loads database configuration.
@@ -147,6 +151,7 @@ public class ImplementsBD implements WorkerDAO {
 
         return foundStatement;
     }
+    
 
     /**
      * Creates a new examSession in the database.
@@ -206,7 +211,7 @@ public class ImplementsBD implements WorkerDAO {
         return creado;
     }
     
-    public boolean createStatement(Statement statement, String session) {
+    public boolean createStatement(Statement statement) {
         boolean creado = false;
         this.openConnection();
 
@@ -217,7 +222,6 @@ public class ImplementsBD implements WorkerDAO {
             stmt.setString(3, statement.getLevel().toString());
             stmt.setBoolean(4, statement.isAvailability());
             stmt.setString(5, statement.getRuta());
-            stmt.setString(6, session);
 
             if (stmt.executeUpdate() > 0) {
                 creado = true;
@@ -248,6 +252,44 @@ public class ImplementsBD implements WorkerDAO {
         }
         return creado;
     }
+    
+    public boolean CheckTeachingUnit(int id) {
+        boolean creado = false;
+        this.openConnection();
+
+        try {
+           stmt = con.prepareStatement(SQLCHECKTEACHINGUNIT);
+           stmt.setInt(1, id);
+           ResultSet resultado = stmt.executeQuery();
+           if (resultado.next()) {
+                creado = true;
+            }
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println("Error al verificar credenciales: " + e.getMessage());
+        }
+        return creado;
+    }
+    
+    public boolean CheckStatement(int id) {
+        boolean creado = false;
+        this.openConnection();
+
+        try {
+           stmt = con.prepareStatement(SQLCHECKSTATEMENT);
+           stmt.setInt(1, id);
+           ResultSet resultado = stmt.executeQuery();
+           if (resultado.next()) {
+                creado = true;
+            }
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println("Error al verificar credenciales: " + e.getMessage());
+        }
+        return creado;
+    }
 
     @Override
     public Map<String, ExamSession> consultAllSessions() {
@@ -264,10 +306,10 @@ public class ImplementsBD implements WorkerDAO {
             while (rs.next()) {
                 session= new ExamSession();
                 session.setCourse(rs.getString("course"));
-
                 session.setDate(rs.getDate("Edate"));
                 session.setDescription(rs.getString("descripcion"));
                 session.setSession(rs.getString("Esession"));
+                session.setStatementId(rs.getInt("id_statement"));
                 sessionsList.put(session.getSession(), session);
             }
             rs.close();
@@ -278,6 +320,67 @@ public class ImplementsBD implements WorkerDAO {
             e.printStackTrace();
         }
         return sessionsList;
+    }
+    
+    public Map<String, TeachingUnit> getAllTeachingUnits(int id) {
+        ResultSet rs = null;
+        TeachingUnit unit;
+        Map<String, TeachingUnit> unitsList = new TreeMap<>();
+
+        this.openConnection();
+
+        try {
+            stmt = con.prepareStatement(SQLGETALLUNITS);
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                unit= new TeachingUnit();
+                unit.setId(rs.getInt("id"));
+                unit.setAcronym(rs.getString("acronim"));
+                unit.setTitle(rs.getString("title"));
+                unit.setEvaluation(rs.getString("evaluation"));
+                unit.setDescription(rs.getString("description"));
+                unitsList.put(unit.getAcronym(), unit);
+            }
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println("Error de SQL");
+            e.printStackTrace();
+        }
+        return unitsList;
+    }
+    public Map<String, Statement> getAllStatement(int id) {
+        ResultSet rs = null;
+        Statement statement;
+        Map<String, Statement> statementList = new TreeMap<>();
+
+        this.openConnection();
+
+        try {
+            stmt = con.prepareStatement(SQLGETALLSTATEMENTS);
+            stmt.setInt(1, id);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                statement= new Statement();
+                statement.setId(rs.getInt("id"));
+                statement.setDescription(rs.getString("description"));
+                statement.setLevel (Level.valueOf(rs.getString("Dlevel")));
+                statement.setAvailability(rs.getBoolean("available"));
+                statement.setRuta(rs.getString("path"));
+                statementList.put(statement.getDescription(), statement);
+            }
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println("Error de SQL");
+            e.printStackTrace();
+        }
+        return statementList;
     }
     
 

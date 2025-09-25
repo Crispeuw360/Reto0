@@ -17,12 +17,14 @@ public class ExamSession {
     private String description;
     private Date date;
     private String course; 
+    private int statementId;
     
     public ExamSession(){
         this.session="";
         this.description="";
         this.date=null;
         this.course="";
+        this.statementId=0;
     }
     
     public ExamSession(String session,String description,Date date,String course){
@@ -30,6 +32,7 @@ public class ExamSession {
         this.description=description;
         this.date=date;
         this.course=course;
+        this.statementId=0;
     }
 
     public String getSession() {
@@ -64,6 +67,13 @@ public class ExamSession {
         this.course = course;
     }
 
+    public int getStatementId() {
+        return statementId;
+    }
+
+    public void setStatementId(int statementId) {
+        this.statementId = statementId;
+    }
     @Override
     public String toString() {
         return "ExamSession{" + "session=" + session + ", description=" + description + ", date=" + date + ", course=" + course + '}';

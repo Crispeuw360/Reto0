@@ -16,7 +16,7 @@ public interface WorkerDAO {
     
     public boolean createUnit(TeachingUnit unit);
     
-    public boolean createStatement(Statement statement, String session);
+    public boolean createStatement(Statement statement);
     
     public ExamSession getSessionFromStatement(int statementid);
     
@@ -24,10 +24,21 @@ public interface WorkerDAO {
     
     public boolean CheckSession(String session);
 
+    public boolean CheckTeachingUnit(int id);
+
+    public boolean CheckStatement(int id);
+
+
     /**
      * Retrieves all clients from the database.
      *
      * @return Map of all clients keyed by username
      */
-    Map<String, ExamSession> consultAllSessions();
+    public Map<String, ExamSession> consultAllSessions();
+    
+    public Map<String, TeachingUnit> getAllTeachingUnits(int id);
+
+    public Map<String, Statement> getAllStatement(int id);
+    
+    
 }

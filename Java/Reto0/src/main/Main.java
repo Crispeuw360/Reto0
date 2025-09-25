@@ -22,7 +22,7 @@ import utilidades.Utilidades;
  */
 public class Main {
     public static int menuM(){
-        System.out.println(" __________\n|          |\n|   menu   |\n|__________|\n\n0.-Exit\n1.-Create a teaching unit\n2.-Create an exam session\n3.-Create an exam statement\n4.-Consult the exam statements\n5.-Consult in which sessions a specific statement has been used\n6.-View the text document associated with a statement\n7.-Assign a statement to a session");
+        System.out.println(" __________\n|          |\n|   menu   |\n|__________|\n\n0.-Exit\n1.-Create a teaching unit\n2.-Create an exam session\n3.-Create an exam statement\n4.-Consult the exam statements\n5.-Consult in which sessions a specific statement has been used\n6.-View the text document associated with a statement");
         int menu=Utilidades.leerInt(0, 7);
         return menu;
     }
@@ -51,9 +51,6 @@ public class Main {
                     
                     break;
                 case 6:
-                    
-                    break;
-                case 7:
                     
                     break;
             }
@@ -92,15 +89,31 @@ public class Main {
         String eSession,description,course;
         Date date;
         char again='Y';
+        int statementId = 0;
+        boolean statementValid = false;
+        boolean sessionValid = false;
         do{
-        System.out.println("Input an exam session");
-        eSession=Utilidades.introducirCadena();
+            do {
+                System.out.println("Input an exam session");
+                eSession=Utilidades.introducirCadena();
+                sessionValid = CheckSession(Lcontroler, eSession);
+            } while (!sessionValid);
         System.out.println("Input a description");
         description=Utilidades.introducirCadena();
         System.out.println("Input a course");
         course=Utilidades.introducirCadena();
         System.out.println("Input a date (yyyy/MM/dd)");
         LocalDate localDate = Utilidades.leerFechaAMD();
+        System.out.println("Input a statement ID");
+        getAllStatement(Lcontroler, statementId);
+        do{
+        statementId = Utilidades.leerInt();
+        if (Lcontroler.CheckStatement(statementId)){
+            statementValid = true;
+        }else{
+            System.err.println("Statement not found. Please try again.");
+        }
+        }while (!statementValid);             
 
         // Convertir LocalDate a Date
         date = Date.valueOf(localDate);
@@ -118,15 +131,18 @@ public class Main {
     }
     
     private static void CreateStatement(Controller Lcontroler) {
-        int id;
-        String description,session,path;
+        int id = 0;
+        String description,path;
         Level level;
         boolean availability;
-        boolean sessionValida = false;
+        boolean statementValid = false;
         char again='Y';
         do{
-            System.out.println("Input an ID for the statement");
-            id=Utilidades.leerInt();
+            do{
+                System.out.println("Input an ID for the statement");
+                id=Utilidades.leerInt();
+                statementValid = CheckStatement(Lcontroler, id);
+            }while (!statementValid);
             System.out.println("Input a description for the statement");
             description=Utilidades.introducirCadena();
             System.out.println("Input a level for the statement (ALTA, MEDIA, BAJA)");
@@ -135,21 +151,10 @@ public class Main {
             availability=Utilidades.leerChar('Y', 'N') == 'Y';
             System.out.println("Input a path for the statement");
             path=Utilidades.introducirCadena();
-            System.out.println("Input a session for the statement");
-            consultAllSessions(Lcontroler);
-            do{
-                session=Utilidades.introducirCadena();
-                if (CheckSession(Lcontroler, session)){
-                    System.out.println("Session found");
-                    sessionValida = true;
-                }else{
-                    System.err.println("Session not found. Please try again.");
-                }
-            }while (!sessionValida);
                 
             Statement statement = new Statement(id, description, level, availability, path);
-
-            if (Lcontroler.createStatement(statement, session)){
+            
+            if (Lcontroler.createStatement(statement)){
                 System.out.println("Statement created Successfully");
             }else{
                 System.err.println("An unexpected ERROR occurred while creating this statement");
@@ -165,7 +170,27 @@ public class Main {
             System.out.println(session);
         }
     }
+    private static void getAllTeachingUnits(Controller Lcontroler, int id) {
+        Map<String, TeachingUnit> units = Lcontroler.getAllTeachingUnits(id);
+        for (TeachingUnit unit : units.values()) {
+            System.out.println(unit);
+        }
+    }
+
+    private static void getAllStatement(Controller Lcontroler, int id) {
+        Map<String, Statement> statements = Lcontroler.getAllStatement(id);
+        for (Statement statement : statements.values()) {
+            System.out.println(statement);
+        }
+    }
+    private static boolean CheckTeachingUnit(Controller Lcontroler, int id) {
+        return Lcontroler.CheckTeachingUnit(id);
+    }
+    private static boolean CheckStatement(Controller Lcontroler, int id) {
+        return Lcontroler.CheckStatement(id);
+    }
     private static boolean CheckSession(Controller Lcontroler, String session) {
         return Lcontroler.CheckSession(session);
     }
+
 }
