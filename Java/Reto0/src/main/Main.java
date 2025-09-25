@@ -51,7 +51,7 @@ public class Main {
                     
                     break;
                 case 6:
-                    
+                    ViewDesc(Lcontroler);
                     break;
                 case 7:
                     
@@ -167,5 +167,16 @@ public class Main {
     }
     private static boolean CheckSession(Controller Lcontroler, String session) {
         return Lcontroler.CheckSession(session);
+    }
+
+    private static void ViewDesc(Controller Lcontroler) {
+        System.out.println("Input the ID of the Statement");
+        int id=Utilidades.leerInt();
+        String doc=Lcontroler.getDesc(id);
+        if (doc.equals("not found")){
+            System.err.println("That statement doesn't exist");
+        }else{
+            System.out.println("El documento es: "+doc);
+        }
     }
 }

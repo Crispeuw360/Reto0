@@ -48,6 +48,7 @@ public class ImplementsBD implements WorkerDAO {
     final String SQLVIEWSTATEMENTBYID = "SELECT * FROM statement WHERE id IN(SELECT idS FROM unit_statement WHERE idU IN(SELECT id FROM unit WHERE id=?));";;
     final String SQLGETSESSIONFROMSTATEMENT = "SELECT Esession FROM statement WHERE id=?;";
     final String SQLCHECKSESSION = "SELECT Esession FROM sessionE WHERE Esession=?;";
+    final String SQLVIEWSTATEMENTBYIDGETDESC= "SELECT description FROM statement WHERE id=?;";
 
 
     /**
@@ -279,7 +280,30 @@ public class ImplementsBD implements WorkerDAO {
         }
         return sessionsList;
     }
-    
 
-    
+    @Override
+    public String getDesc(int id) {
+        String descrip="not found";
+        this.openConnection();
+
+        try {
+            stmt = con.prepareStatement(SQLVIEWSTATEMENTBYIDGETDESC);
+            stmt.setInt(1, id);
+            ResultSet resultado = stmt.executeQuery();
+            if (resultado.next()) {
+                
+                descrip = resultado.getString("description");
+
+            }
+
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println("Error al obtener el modelo: " + e.getMessage());
+      
+        }
+        return descrip;
+    }
+
 }
+

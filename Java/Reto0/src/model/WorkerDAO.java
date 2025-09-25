@@ -30,4 +30,6 @@ public interface WorkerDAO {
      * @return Map of all clients keyed by username
      */
     Map<String, ExamSession> consultAllSessions();
+
+    public String getDesc(int id);
 }

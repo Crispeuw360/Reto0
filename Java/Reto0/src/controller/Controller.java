@@ -39,4 +39,8 @@ public class Controller {
      public boolean CheckSession(String session){
          return dao.CheckSession(session);
      }
+
+    public String getDesc(int id) {
+        return dao.getDesc(id);
+    }
 }
