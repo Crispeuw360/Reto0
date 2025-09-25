@@ -21,6 +21,8 @@ public interface WorkerDAO {
     public ExamSession getSessionFromStatement(int statementid);
     
     public Statement getStatementById(int id);
+    
+    public boolean CheckSession(String session);
 
     /**
      * Retrieves all clients from the database.

@@ -47,6 +47,7 @@ public class ImplementsBD implements WorkerDAO {
     final String SQLGETALLSESSIONS = "SELECT * FROM sessionE;";
     final String SQLVIEWSTATEMENTBYID = "SELECT * FROM statement WHERE id IN(SELECT idS FROM unit_statement WHERE idU IN(SELECT id FROM unit WHERE id=?));";;
     final String SQLGETSESSIONFROMSTATEMENT = "SELECT Esession FROM statement WHERE id=?;";
+    final String SQLCHECKSESSION = "SELECT Esession FROM sessionE WHERE Esession=?;";
 
 
     /**
@@ -228,45 +229,26 @@ public class ImplementsBD implements WorkerDAO {
         }
         return creado;
     }
-
-    /**
-     * Authenticates a examSession's credentials.
-     *
-     * @param statement The examSession to authenticate
-     * @return The authenticated Worker object if successful, null otherwise
-     */
-   /* public Statement consultStatement(Statement statement) {
-        Statement foundStatement = null;
+    
+    public boolean CheckSession(String session) {
+        boolean creado = false;
         this.openConnection();
 
         try {
-            stmt = con.prepareStatement(SQLLOGIN);
-            stmt.setString(1, statement.getUser());
-            stmt.setString(2, statement.getPassword());
-            ResultSet resultado = stmt.executeQuery();
-
-            if (resultado.next()) {
-                boolean esAdmin = resultado.getBoolean("ADMIN_");
-                String usuario = resultado.getString("USER_");
-                String contraseña = resultado.getString("PASSWORD_");
-                int idCarDealer = resultado.getInt("ID_CAR_DEALER");
-
-                foundStatement = new Worker(usuario, contraseña, esAdmin, idCarDealer);
+           stmt = con.prepareStatement(SQLCHECKSESSION);
+           stmt.setString(1, session);
+           ResultSet resultado = stmt.executeQuery();
+           if (resultado.next()) {
+                creado = true;
             }
-
             stmt.close();
             con.close();
         } catch (SQLException e) {
             System.out.println("Error al verificar credenciales: " + e.getMessage());
         }
-        return foundStatement;
-    }*/
+        return creado;
+    }
 
-    /**
-     * Retrieves all clients from the database.
-     *
-     * @return Map of all clients keyed by username
-     */
     @Override
     public Map<String, ExamSession> consultAllSessions() {
         ResultSet rs = null;

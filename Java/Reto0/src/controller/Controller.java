@@ -25,7 +25,7 @@ public class Controller {
          return dao.createSession(session);
      }
      public boolean createStatement(Statement statement, String session){
-         return dao.createStatement(statement," ");
+         return dao.createStatement(statement, session);
      }
      public ExamSession getSessionFromStatement(int statementid){
          return dao.getSessionFromStatement(statementid);
@@ -35,5 +35,8 @@ public class Controller {
      }
      public Map<String, ExamSession> consultAllSessions(){
          return dao.consultAllSessions();
+     }
+     public boolean CheckSession(String session){
+         return dao.CheckSession(session);
      }
 }

@@ -122,6 +122,7 @@ public class Main {
         String description,session,path;
         Level level;
         boolean availability;
+        boolean sessionValida = false;
         char again='Y';
         do{
             System.out.println("Input an ID for the statement");
@@ -136,8 +137,16 @@ public class Main {
             path=Utilidades.introducirCadena();
             System.out.println("Input a session for the statement");
             consultAllSessions(Lcontroler);
-            session=Utilidades.introducirCadena();
-
+            do{
+                session=Utilidades.introducirCadena();
+                if (CheckSession(Lcontroler, session)){
+                    System.out.println("Session found");
+                    sessionValida = true;
+                }else{
+                    System.err.println("Session not found. Please try again.");
+                }
+            }while (!sessionValida);
+                
             Statement statement = new Statement(id, description, level, availability, path);
 
             if (Lcontroler.createStatement(statement, session)){
@@ -155,5 +164,8 @@ public class Main {
         for (ExamSession session : sessions.values()) {
             System.out.println(session);
         }
+    }
+    private static boolean CheckSession(Controller Lcontroler, String session) {
+        return Lcontroler.CheckSession(session);
     }
 }
