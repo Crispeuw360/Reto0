@@ -36,9 +36,9 @@ public interface WorkerDAO {
      */
     public Map<String, ExamSession> consultAllSessions();
     
-    public Map<String, TeachingUnit> getAllTeachingUnits(int id);
+    public Map<String, TeachingUnit> getAllTeachingUnits();
 
-    public Map<String, Statement> getAllStatement(int id);
+    public Map<String, Statement> getAllStatement();
     
     
 }

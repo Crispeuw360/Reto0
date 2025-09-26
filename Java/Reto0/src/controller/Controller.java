@@ -36,11 +36,11 @@ public class Controller {
      public Map<String, ExamSession> consultAllSessions(){
          return dao.consultAllSessions();
      }
-     public Map<String, TeachingUnit> getAllTeachingUnits(int id){
-        return dao.getAllTeachingUnits(id);
+     public Map<String, TeachingUnit> getAllTeachingUnits(){
+        return dao.getAllTeachingUnits();
     }
-    public Map<String, Statement> getAllStatement(int id){
-        return dao.getAllStatement(id);
+    public Map<String, Statement> getAllStatement(){
+        return dao.getAllStatement();
     }
      public boolean CheckSession(String session){
          return dao.CheckSession(session);

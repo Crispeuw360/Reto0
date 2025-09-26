@@ -27,12 +27,12 @@ public class ExamSession {
         this.statementId=0;
     }
     
-    public ExamSession(String session,String description,Date date,String course){
+    public ExamSession(String session,String description,Date date,String course,int statementId){
         this.session=session;
         this.description=description;
         this.date=date;
         this.course=course;
-        this.statementId=0;
+        this.statementId=statementId;
     }
 
     public String getSession() {

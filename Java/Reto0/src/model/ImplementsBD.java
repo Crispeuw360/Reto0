@@ -48,11 +48,11 @@ public class ImplementsBD implements WorkerDAO {
     final String SQLGETSESSIONFROMSTATEMENT = "SELECT Esession FROM statement WHERE id=?;";
     final String SQLCHECKSESSION = "SELECT Esession FROM sessionE WHERE Esession=?;";
     final String SQLCHECKTEACHINGUNIT = "SELECT id FROM unit WHERE id=?;";
-    final String SQLCHECKSTATEMENT = "SELECT id FROM Statement WHERE id=?;";
+    final String SQLCHECKSTATEMENT = "SELECT id FROM statement WHERE id=?;";
 
-    final String SQLGETALLUNITS = "SELECT * FROM unit WHERE id=?;";
+    final String SQLGETALLUNITS = "SELECT * FROM unit;";
     final String SQLGETALLSESSIONS = "SELECT * FROM sessionE;";
-    final String SQLGETALLSTATEMENTS = "SELECT * FROM statement WHERE id=?;";
+    final String SQLGETALLSTATEMENTS = "SELECT * FROM statement ;";
 
     /**
      * Constructs a new ImplementsBD instance and loads database configuration.
@@ -103,8 +103,9 @@ public class ImplementsBD implements WorkerDAO {
                 String description = resultado.getString("descripcion");
                 Date date = resultado.getDate("Edate");
                 String course = resultado.getString("course");
+                int statementId = resultado.getInt("id_statement");
 
-                foundSession = new ExamSession(session, description, date, course);
+                foundSession = new ExamSession(session, description, date, course,statementId);
             }
 
             stmt.close();
@@ -159,7 +160,7 @@ public class ImplementsBD implements WorkerDAO {
      * @param session The examSession to create
      * @return true if creation was successful, false otherwise
      */
-    
+    @Override
     public boolean createSession(ExamSession session) {
         boolean ok = false;
         this.openConnection();
@@ -169,6 +170,7 @@ public class ImplementsBD implements WorkerDAO {
             stmt.setString(2, session.getDescription());
             stmt.setDate(3, new java.sql.Date(session.getDate().getTime()));
             stmt.setString(4, session.getCourse());
+            stmt.setInt(5, session.getStatementId());
 
             if (stmt.executeUpdate() > 0) {
                 ok = true;
@@ -188,6 +190,7 @@ public class ImplementsBD implements WorkerDAO {
      * @param unit The unit to create
      * @return true if creation was successful, false otherwise
      */
+    @Override
     public boolean createUnit(TeachingUnit unit) {
         boolean creado = false;
         this.openConnection();
@@ -211,6 +214,7 @@ public class ImplementsBD implements WorkerDAO {
         return creado;
     }
     
+    @Override
     public boolean createStatement(Statement statement) {
         boolean creado = false;
         this.openConnection();
@@ -234,6 +238,7 @@ public class ImplementsBD implements WorkerDAO {
         return creado;
     }
     
+    @Override
     public boolean CheckSession(String session) {
         boolean creado = false;
         this.openConnection();
@@ -252,7 +257,8 @@ public class ImplementsBD implements WorkerDAO {
         }
         return creado;
     }
-    
+
+    @Override
     public boolean CheckTeachingUnit(int id) {
         boolean creado = false;
         this.openConnection();
@@ -271,15 +277,17 @@ public class ImplementsBD implements WorkerDAO {
         }
         return creado;
     }
-    
+
+    @Override
     public boolean CheckStatement(int id) {
         boolean creado = false;
+        ResultSet resultado;
         this.openConnection();
 
         try {
            stmt = con.prepareStatement(SQLCHECKSTATEMENT);
            stmt.setInt(1, id);
-           ResultSet resultado = stmt.executeQuery();
+           resultado = stmt.executeQuery();
            if (resultado.next()) {
                 creado = true;
             }
@@ -322,7 +330,7 @@ public class ImplementsBD implements WorkerDAO {
         return sessionsList;
     }
     
-    public Map<String, TeachingUnit> getAllTeachingUnits(int id) {
+    public Map<String, TeachingUnit> getAllTeachingUnits() {
         ResultSet rs = null;
         TeachingUnit unit;
         Map<String, TeachingUnit> unitsList = new TreeMap<>();
@@ -331,7 +339,6 @@ public class ImplementsBD implements WorkerDAO {
 
         try {
             stmt = con.prepareStatement(SQLGETALLUNITS);
-            stmt.setInt(1, id);
             rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -352,7 +359,7 @@ public class ImplementsBD implements WorkerDAO {
         }
         return unitsList;
     }
-    public Map<String, Statement> getAllStatement(int id) {
+    public Map<String, Statement> getAllStatement() {
         ResultSet rs = null;
         Statement statement;
         Map<String, Statement> statementList = new TreeMap<>();
@@ -361,7 +368,6 @@ public class ImplementsBD implements WorkerDAO {
 
         try {
             stmt = con.prepareStatement(SQLGETALLSTATEMENTS);
-            stmt.setInt(1, id);
             rs = stmt.executeQuery();
 
             while (rs.next()) {

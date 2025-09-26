@@ -60,10 +60,18 @@ public class Main {
     private static void CreateUnit(Controller Lcontroler) {
         int id;
         String acronym, title, evaluation, desc;
+        boolean unitValid = true;
         char again='Y';
         do{
-        System.out.println("Input an ID for the unit");
-        id=Utilidades.leerInt();
+            do{
+            System.out.println("Input an ID for the unit");
+            id=Utilidades.leerInt();
+            if (!Lcontroler.CheckTeachingUnit(id)){
+                unitValid = false;
+            }else{
+                System.err.println("Unit already exists. Please try again.");
+            }
+            }while (unitValid);
         System.out.println("Input an acronym for the unit");
         acronym=Utilidades.introducirCadena();
         System.out.println("Input a title for the unit");
@@ -91,13 +99,17 @@ public class Main {
         char again='Y';
         int statementId = 0;
         boolean statementValid = false;
-        boolean sessionValid = false;
+        boolean sessionExists = true;
         do{
             do {
                 System.out.println("Input an exam session");
                 eSession=Utilidades.introducirCadena();
-                sessionValid = CheckSession(Lcontroler, eSession);
-            } while (!sessionValid);
+                if (!Lcontroler.CheckSession(eSession)){
+                    sessionExists = false;
+                }else{
+                    System.err.println("Session already exists. Please try again.");
+                }
+            } while (sessionExists);
         System.out.println("Input a description");
         description=Utilidades.introducirCadena();
         System.out.println("Input a course");
@@ -105,7 +117,7 @@ public class Main {
         System.out.println("Input a date (yyyy/MM/dd)");
         LocalDate localDate = Utilidades.leerFechaAMD();
         System.out.println("Input a statement ID");
-        getAllStatement(Lcontroler, statementId);
+        getAllStatement(Lcontroler);
         do{
         statementId = Utilidades.leerInt();
         if (Lcontroler.CheckStatement(statementId)){
@@ -118,7 +130,7 @@ public class Main {
         // Convertir LocalDate a Date
         date = Date.valueOf(localDate);
 
-        ExamSession session = new ExamSession(eSession, description, date, course);
+        ExamSession session = new ExamSession(eSession, description, date, course,statementId);
 
         if (Lcontroler.createSession(session)){
             System.out.println("Session created Successfully");
@@ -135,14 +147,18 @@ public class Main {
         String description,path;
         Level level;
         boolean availability;
-        boolean statementValid = false;
+        boolean statementExists = true;
         char again='Y';
         do{
             do{
                 System.out.println("Input an ID for the statement");
                 id=Utilidades.leerInt();
-                statementValid = CheckStatement(Lcontroler, id);
-            }while (!statementValid);
+                 if (!Lcontroler.CheckStatement(id)){
+                     statementExists = false;
+                 }else{
+                     System.err.println("Statement already exists. Please try again.");
+                 }
+            }while (statementExists);
             System.out.println("Input a description for the statement");
             description=Utilidades.introducirCadena();
             System.out.println("Input a level for the statement (ALTA, MEDIA, BAJA)");
@@ -170,27 +186,20 @@ public class Main {
             System.out.println(session);
         }
     }
-    private static void getAllTeachingUnits(Controller Lcontroler, int id) {
-        Map<String, TeachingUnit> units = Lcontroler.getAllTeachingUnits(id);
+    private static void getAllTeachingUnits(Controller Lcontroler) {
+        Map<String, TeachingUnit> units = Lcontroler.getAllTeachingUnits();
         for (TeachingUnit unit : units.values()) {
             System.out.println(unit);
         }
     }
 
-    private static void getAllStatement(Controller Lcontroler, int id) {
-        Map<String, Statement> statements = Lcontroler.getAllStatement(id);
+    private static void getAllStatement(Controller Lcontroler) {
+        Map<String, Statement> statements = Lcontroler.getAllStatement();
         for (Statement statement : statements.values()) {
             System.out.println(statement);
         }
     }
-    private static boolean CheckTeachingUnit(Controller Lcontroler, int id) {
-        return Lcontroler.CheckTeachingUnit(id);
-    }
-    private static boolean CheckStatement(Controller Lcontroler, int id) {
-        return Lcontroler.CheckStatement(id);
-    }
-    private static boolean CheckSession(Controller Lcontroler, String session) {
-        return Lcontroler.CheckSession(session);
-    }
+
+    
 
 }
