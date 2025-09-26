@@ -51,5 +51,9 @@ public class Controller {
      public boolean CheckStatement(int id){
          return dao.CheckStatement(id);
      }
+
+     public boolean addStatementToTeachingUnit(int statementId, int teachingUnitId){
+         return dao.addStatementToTeachingUnit(statementId, teachingUnitId);
+     }
      
 }

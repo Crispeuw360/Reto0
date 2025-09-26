@@ -28,6 +28,8 @@ public interface WorkerDAO {
 
     public boolean CheckStatement(int id);
 
+    public boolean addStatementToTeachingUnit(int statementId, int teachingUnitId);
+
 
     /**
      * Retrieves all clients from the database.

@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package main;
+
 import java.time.LocalDate;
 import java.util.Map;
 import java.sql.Date;
@@ -21,17 +22,19 @@ import utilidades.Utilidades;
  * 
  */
 public class Main {
-    public static int menuM(){
-        System.out.println(" __________\n|          |\n|   menu   |\n|__________|\n\n0.-Exit\n1.-Create a teaching unit\n2.-Create an exam session\n3.-Create an exam statement\n4.-Consult the exam statements\n5.-Consult in which sessions a specific statement has been used\n6.-View the text document associated with a statement");
-        int menu=Utilidades.leerInt(0, 7);
+    public static int menuM() {
+        System.out.println(
+                " __________\n|          |\n|   menu   |\n|__________|\n\n0.-Exit\n1.-Create a teaching unit\n2.-Create an exam session\n3.-Create an exam statement\n4.-Consult the exam statements\n5.-Consult in which sessions a specific statement has been used\n6.-View the text document associated with a statement");
+        int menu = Utilidades.leerInt(0, 7);
         return menu;
     }
+
     public static void main(String[] args) {
-        Controller Lcontroler= new Controller();
+        Controller Lcontroler = new Controller();
         int menu = 0;
         do {
-            menu=menuM();
-            switch (menu){
+            menu = menuM();
+            switch (menu) {
                 case 0:
                     System.out.println("Bye!");
                     break;
@@ -45,153 +48,161 @@ public class Main {
                     CreateStatement(Lcontroler);
                     break;
                 case 4:
-                    
+
                     break;
                 case 5:
-                    
+
                     break;
                 case 6:
-                    
+
                     break;
             }
-        }while (menu != 0);
+        } while (menu != 0);
     }
 
     private static void CreateUnit(Controller Lcontroler) {
         int id;
         String acronym, title, evaluation, desc;
         boolean unitValid = true;
-        char again='Y';
-        do{
-            do{
-            System.out.println("Input an ID for the unit");
-            id=Utilidades.leerInt();
-            if (!Lcontroler.CheckTeachingUnit(id)){
-                unitValid = false;
-            }else{
-                System.err.println("Unit already exists. Please try again.");
+        char again = 'Y';
+        do {
+            do {
+                System.out.println("Input an ID for the unit");
+                id = Utilidades.leerInt();
+                if (!Lcontroler.CheckTeachingUnit(id)) {
+                    unitValid = false;
+                } else {
+                    System.err.println("Unit already exists. Please try again.");
+                }
+            } while (unitValid);
+            System.out.println("Input an acronym for the unit");
+            acronym = Utilidades.introducirCadena();
+            System.out.println("Input a title for the unit");
+            title = Utilidades.introducirCadena();
+            System.out.println("Input an evaluation for the unit");
+            evaluation = Utilidades.introducirCadena();
+            System.out.println("Input a description for the unit");
+            desc = Utilidades.introducirCadena();
+
+            TeachingUnit tu = new TeachingUnit(id, acronym, title, evaluation, desc);
+
+            if (Lcontroler.createUnit(tu)) {
+                System.out.println("Unit created Succesfully");
+            } else {
+                System.err.println("An unexpected ERROR ocurred while creating this unit");
             }
-            }while (unitValid);
-        System.out.println("Input an acronym for the unit");
-        acronym=Utilidades.introducirCadena();
-        System.out.println("Input a title for the unit");
-        title=Utilidades.introducirCadena();
-        System.out.println("Input an evaluation for the unit");
-        evaluation=Utilidades.introducirCadena();
-        System.out.println("Input a description for the unit");
-        desc=Utilidades.introducirCadena();
-        
-        TeachingUnit tu =new TeachingUnit(id,acronym,title,evaluation,desc);
-        
-        if (Lcontroler.createUnit(tu)){
-            System.out.println("Unit created Succesfully");
-        }else{
-            System.err.println("An unexpected ERROR ocurred while creating this unit");
-        }
             System.out.println("Do you want to create aothe unit?(Y/N)");
-            again=Utilidades.leerChar('Y', 'N');
-        }while(again=='Y');
+            again = Utilidades.leerChar('Y', 'N');
+        } while (again == 'Y');
     }
 
     private static void CreateSession(Controller Lcontroler) {
-        String eSession,description,course;
+        String eSession, description, course;
         Date date;
-        char again='Y';
+        char again = 'Y';
         int statementId = 0;
         boolean statementValid = false;
         boolean sessionExists = true;
-        do{
+        do {
             do {
                 System.out.println("Input an exam session");
-                eSession=Utilidades.introducirCadena();
-                if (!Lcontroler.CheckSession(eSession)){
+                eSession = Utilidades.introducirCadena();
+                if (!Lcontroler.CheckSession(eSession)) {
                     sessionExists = false;
-                }else{
+                } else {
                     System.err.println("Session already exists. Please try again.");
                 }
             } while (sessionExists);
-        System.out.println("Input a description");
-        description=Utilidades.introducirCadena();
-        System.out.println("Input a course");
-        course=Utilidades.introducirCadena();
-        System.out.println("Input a date (yyyy/MM/dd)");
-        LocalDate localDate = Utilidades.leerFechaAMD();
-        System.out.println("Input a statement ID");
-        getAllStatement(Lcontroler);
-        do{
-        statementId = Utilidades.leerInt();
-        if (Lcontroler.CheckStatement(statementId)){
-            statementValid = true;
-        }else{
-            System.err.println("Statement not found. Please try again.");
-        }
-        }while (!statementValid);             
+            System.out.println("Input a description");
+            description = Utilidades.introducirCadena();
+            System.out.println("Input a course");
+            course = Utilidades.introducirCadena();
+            System.out.println("Input a date (yyyy/MM/dd)");
+            LocalDate localDate = Utilidades.leerFechaAMD();
+            System.out.println("Input a statement ID");
+            getAllStatement(Lcontroler);
+            do {
+                statementId = Utilidades.leerInt();
+                if (Lcontroler.CheckStatement(statementId)) {
+                    statementValid = true;
+                } else {
+                    System.err.println("Statement not found. Please try again.");
+                }
+            } while (!statementValid);
 
-        // Convertir LocalDate a Date
-        date = Date.valueOf(localDate);
+            // Convertir LocalDate a Date
+            date = Date.valueOf(localDate);
 
-        ExamSession session = new ExamSession(eSession, description, date, course,statementId);
+            ExamSession session = new ExamSession(eSession, description, date, course, statementId);
 
-        if (Lcontroler.createSession(session)){
-            System.out.println("Session created Successfully");
-        }else{
-            System.err.println("An unexpected ERROR occurred while creating this session");
-        }
+            if (Lcontroler.createSession(session)) {
+                System.out.println("Session created Successfully");
+            } else {
+                System.err.println("An unexpected ERROR occurred while creating this session");
+            }
             System.out.println("Do you want to create another session?(Y/N)");
-            again=Utilidades.leerChar('Y', 'N');
-        }while(again=='Y');
+            again = Utilidades.leerChar('Y', 'N');
+        } while (again == 'Y');
     }
-    
+
     private static void CreateStatement(Controller Lcontroler) {
         int id = 0;
-        String description,path;
+        int teachingUnitId = 0;
+        String description, path;
         Level level = null;
         boolean availability;
         boolean levelValid = false;
         boolean statementExists = true;
-        char again='Y';
-        do{
-            do{
+        char again = 'Y';
+        do {
+            do {
                 System.out.println("Input an ID for the statement");
-                id=Utilidades.leerInt();
-                 if (!Lcontroler.CheckStatement(id)){
-                     statementExists = false;
-                 }else{
-                     System.err.println("Statement already exists. Please try again.");
-                 }
-            }while (statementExists);
+                id = Utilidades.leerInt();
+                if (!Lcontroler.CheckStatement(id)) {
+                    statementExists = false;
+                } else {
+                    System.err.println("Statement already exists. Please try again.");
+                }
+            } while (statementExists);
             System.out.println("Input a description for the statement");
-            description=Utilidades.introducirCadena();
-            do{
-            System.out.println("Input a level for the statement (ALTA, MEDIA, BAJA)");
-            if (Utilidades.introducirCadena().toUpperCase().equals("ALTA")){
-                level=Level.ALTA;
-                levelValid = true;
-            }else if (Utilidades.introducirCadena().toUpperCase().equals("MEDIA")){
-                level=Level.MEDIA;
-                levelValid = true;
-            }else if (Utilidades.introducirCadena().toUpperCase().equals("BAJA")){
-                level=Level.BAJA;
-                levelValid = true;
-            }else{
-                System.err.println("Invalid level. Please try again.");
-            }
-            }while (!levelValid);
+            description = Utilidades.introducirCadena();
+            do {
+                System.out.println("Input a level for the statement (ALTA, MEDIA, BAJA)");
+                if (Utilidades.introducirCadena().toUpperCase().equals("ALTA")) {
+                    level = Level.ALTA;
+                    levelValid = true;
+                } else if (Utilidades.introducirCadena().toUpperCase().equals("MEDIA")) {
+                    level = Level.MEDIA;
+                    levelValid = true;
+                } else if (Utilidades.introducirCadena().toUpperCase().equals("BAJA")) {
+                    level = Level.BAJA;
+                    levelValid = true;
+                } else {
+                    System.err.println("Invalid level. Please try again.");
+                }
+            } while (!levelValid);
             System.out.println("Input availability for the statement (Y/N)");
-            availability=Utilidades.leerChar('Y', 'N') == 'Y';
+            availability = Utilidades.leerChar('Y', 'N') == 'Y';
             System.out.println("Input a path for the statement");
-            path=Utilidades.introducirCadena();
-                
+            path = Utilidades.introducirCadena();
+
             Statement statement = new Statement(id, description, level, availability, path);
-            
-            if (Lcontroler.createStatement(statement)){
+
+            if (Lcontroler.createStatement(statement)) {
                 System.out.println("Statement created Successfully");
-            }else{
+            } else {
                 System.err.println("An unexpected ERROR occurred while creating this statement");
             }
+            do {
+                System.out.println("Input a teaching unit ID for the statement");
+                getAllTeachingUnits(Lcontroler);
+                teachingUnitId = Utilidades.leerInt();
+                Lcontroler.addStatementToTeachingUnit(statement.getId(), teachingUnitId);
+            } while (!Lcontroler.CheckTeachingUnit(teachingUnitId));
+
             System.out.println("Do you want to create another statement?(Y/N)");
-            again=Utilidades.leerChar('Y', 'N');
-        }while(again=='Y');
+            again = Utilidades.leerChar('Y', 'N');
+        } while (again == 'Y');
     }
 
     private static void consultAllSessions(Controller Lcontroler) {
@@ -200,6 +211,7 @@ public class Main {
             System.out.println(session);
         }
     }
+
     private static void getAllTeachingUnits(Controller Lcontroler) {
         Map<String, TeachingUnit> units = Lcontroler.getAllTeachingUnits();
         for (TeachingUnit unit : units.values()) {
@@ -213,7 +225,5 @@ public class Main {
             System.out.println(statement);
         }
     }
-
-    
 
 }

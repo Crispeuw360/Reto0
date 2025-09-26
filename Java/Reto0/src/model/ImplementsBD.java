@@ -388,6 +388,22 @@ public class ImplementsBD implements WorkerDAO {
         }
         return statementList;
     }
+    public boolean addStatementToTeachingUnit(int statementId, int teachingUnitId){
+        this.openConnection();
+        try {
+            stmt = con.prepareStatement(SQLINSERTUNIT_STATEMENT);
+            stmt.setInt(1, teachingUnitId);
+            stmt.setInt(2, statementId);
+            if (stmt.executeUpdate() > 0) {
+                return true;
+            }
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println("Error al insertar el modelo: " + e.getMessage());
+        }
+        return false;
+    }
     
 
     
