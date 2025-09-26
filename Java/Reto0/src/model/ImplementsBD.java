@@ -53,6 +53,7 @@ public class ImplementsBD implements WorkerDAO {
     final String SQLGETALLUNITS = "SELECT * FROM unit;";
     final String SQLGETALLSESSIONS = "SELECT * FROM sessionE;";
     final String SQLGETALLSTATEMENTS = "SELECT * FROM statement ;";
+    final String SQLGETSTATEMENTS_BY_UNIT = "SELECT * FROM statement " + "WHERE id IN (SELECT idS FROM Unit_Statement WHERE idU = ?);";
 
     /**
      * Constructs a new ImplementsBD instance and loads database configuration.
@@ -389,6 +390,38 @@ public class ImplementsBD implements WorkerDAO {
         return statementList;
     }
     
+    public Map<Integer, Statement> getStatementByUnit(int unitId) {
+        ResultSet rs = null;
+        Map<Integer, Statement> statementList = new TreeMap<>();
+        this.openConnection();
+
+        try {
+            stmt = con.prepareStatement(SQLGETSTATEMENTS_BY_UNIT);
+            stmt.setInt(1, unitId);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Statement st = new Statement();
+                st.setId(rs.getInt("id"));
+                st.setDescription(rs.getString("description"));
+                st.setLevel(Level.valueOf(rs.getString("Dlevel")));
+                st.setAvailability(rs.getBoolean("available"));
+                st.setRuta(rs.getString("path"));
+                // si tu modelo Statement guarda la sesión:
+                // st.setSession(rs.getString("Esession"));
+
+                statementList.put(st.getId(), st);
+            }
+
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println("Error de SQL en getStatementByUnit: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return statementList;
+    }
 
     
 }

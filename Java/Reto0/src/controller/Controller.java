@@ -51,5 +51,8 @@ public class Controller {
      public boolean CheckStatement(int id){
          return dao.CheckStatement(id);
      }
+     public Map<Integer, Statement> getStatementByUnit(int unitId){
+        return dao.getStatementByUnit(unitId);
+    }
      
 }

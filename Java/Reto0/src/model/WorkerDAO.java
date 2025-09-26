@@ -40,5 +40,7 @@ public interface WorkerDAO {
 
     public Map<String, Statement> getAllStatement();
     
+    public Map<Integer, Statement> getStatementByUnit(int Unitid);
+    
     
 }

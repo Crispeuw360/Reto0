@@ -9,6 +9,8 @@ import java.util.Map;
 import java.sql.Date;
 
 import controller.Controller;
+import java.util.HashMap;
+import java.util.TreeMap;
 import model.TeachingUnit;
 import model.ExamSession;
 import model.Statement;
@@ -45,7 +47,7 @@ public class Main {
                     CreateStatement(Lcontroler);
                     break;
                 case 4:
-                    
+                    getStatementByUnit(Lcontroler);
                     break;
                 case 5:
                     
@@ -213,7 +215,64 @@ public class Main {
             System.out.println(statement);
         }
     }
+    private static void getStatementByUnit(Controller Lcontroler){
+        boolean datosValidos=true;
+        System.out.println("Consult Statement by id: ");
+        
+        Map<String, TeachingUnit>units = Lcontroler.getAllTeachingUnits();
+        if (units.isEmpty()){
+            System.out.println("No hay unidades disponibles");
+            datosValidos=false;
+        }
+        
+        TreeMap<Integer, TeachingUnit> byId = new TreeMap<>();
+        for (TeachingUnit u : units.values()) {
+            byId.put(u.getId(), u);
+        }
+        if (datosValidos){
+            System.out.println("Units: ");
+            if (datosValidos) {
+                System.out.println("Unidades disponibles");
+                byId.forEach((id, u) ->
+                    System.out.println(" " + id + " : " + u.getAcronym() + " | " + u.getTitle()));
+            }
+        }
+        int unitId = -1;
+        if (datosValidos) {
+            try {
+                System.out.print("\nIntroduce el ID de la unidad: ");
+                unitId = Utilidades.leerInt();
+            } catch (NumberFormatException e) {
+                System.out.println("Debes introducir un número entero.");
+                datosValidos = false;
+            }
+        }
 
+        // 3) Validar que la unidad existe
+        if (datosValidos && !Lcontroler.CheckTeachingUnit(unitId)) {
+            System.out.println("La unidad " + unitId + " no existe.");
+            datosValidos = false;
+        }
+        
+        if (datosValidos){
+            Map<Integer, Statement > statements =Lcontroler.getStatementByUnit(unitId);
+            if(statements.isEmpty()){
+                System.out.println("No hay ningun enunciado que pertenezca a la unidad: "+unitId);
+            }
+            else {
+            System.out.println("\nEnunciados de la unidad " + unitId );
+            for (Statement s : statements.values()) {
+                System.out.printf(" - [%d] %s (Nivel: %s, Disponible: %s, Path: %s)%n",
+                        s.getId(),
+                        s.getDescription(),
+                        s.getLevel(),
+                        s.isAvailability(),
+                        s.getRuta());
+            }
+        }
+     
+        }
+    }
     
 
 }
