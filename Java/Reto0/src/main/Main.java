@@ -145,8 +145,9 @@ public class Main {
     private static void CreateStatement(Controller Lcontroler) {
         int id = 0;
         String description,path;
-        Level level;
+        Level level = null;
         boolean availability;
+        boolean levelValid = false;
         boolean statementExists = true;
         char again='Y';
         do{
@@ -161,8 +162,21 @@ public class Main {
             }while (statementExists);
             System.out.println("Input a description for the statement");
             description=Utilidades.introducirCadena();
+            do{
             System.out.println("Input a level for the statement (ALTA, MEDIA, BAJA)");
-            level=Level.valueOf(Utilidades.introducirCadena().toUpperCase());
+            if (Utilidades.introducirCadena().toUpperCase().equals("ALTA")){
+                level=Level.ALTA;
+                levelValid = true;
+            }else if (Utilidades.introducirCadena().toUpperCase().equals("MEDIA")){
+                level=Level.MEDIA;
+                levelValid = true;
+            }else if (Utilidades.introducirCadena().toUpperCase().equals("BAJA")){
+                level=Level.BAJA;
+                levelValid = true;
+            }else{
+                System.err.println("Invalid level. Please try again.");
+            }
+            }while (!levelValid);
             System.out.println("Input availability for the statement (Y/N)");
             availability=Utilidades.leerChar('Y', 'N') == 'Y';
             System.out.println("Input a path for the statement");
