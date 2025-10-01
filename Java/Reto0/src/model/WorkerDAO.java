@@ -33,14 +33,7 @@ public interface WorkerDAO {
     public boolean addStatementToTeachingUnit(int statementId, int teachingUnitId);
 
     public String viewTextDocumentFromStatement(int statementId);
-
-    /**
-     * Retrieves all clients from the database.
-     *
-     * @return Map of all clients keyed by username
-     */
-    public Map<String, ExamSession> consultAllSessions();
-    
+   
     public Map<String, TeachingUnit> getAllTeachingUnits();
 
     public Map<String, Statement> getAllStatement();

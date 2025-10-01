@@ -33,9 +33,7 @@ public class Controller {
      public Statement getStatementById(int id){
          return dao.getStatementById(id);
      }
-     public Map<String, ExamSession> consultAllSessions(){
-         return dao.consultAllSessions();
-     }
+
      public Map<String, TeachingUnit> getAllTeachingUnits(){
         return dao.getAllTeachingUnits();
     }

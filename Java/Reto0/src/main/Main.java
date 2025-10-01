@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import java.sql.Date;
 
 import controller.Controller;
+import exception.NotFoundExcption;
 import model.TeachingUnit;
 import model.ExamSession;
 import model.Statement;
@@ -46,7 +47,7 @@ public class Main {
                     CreateSession(Lcontroler);
                     break;
                 case 3:
-                    CreateStatement(Lcontroler);
+                        CreateStatement(Lcontroler);
                     break;
                 case 4:
                     getStatementByUnit(Lcontroler);
@@ -194,24 +195,26 @@ public class Main {
             } else {
                 System.err.println("An unexpected ERROR occurred while creating this statement");
             }
-            do {
-                System.out.println("Input a teaching unit ID for the statement");
-                getAllTeachingUnits(Lcontroler);
-                teachingUnitId = Utilidades.leerInt();
+            while (teachingUnitId == -1) {
+                try {
+                    System.out.println("Input a teaching unit ID for the statement");
+                    getAllTeachingUnits(Lcontroler);
+                    teachingUnitId = Utilidades.leerInt();
+                    if (!Lcontroler.CheckTeachingUnit(teachingUnitId)) {
+                        throw new NotFoundExcption();
+                    }
+                } catch (NotFoundExcption e) {
+                    System.err.println(e.getMessage());
+                    teachingUnitId = -1; // Reset para seguir en el bucle
+                }
                 Lcontroler.addStatementToTeachingUnit(statement.getId(), teachingUnitId);
-            } while (!Lcontroler.CheckTeachingUnit(teachingUnitId));
+            }
 
             System.out.println("Do you want to create another statement?(Y/N)");
             again = Utilidades.leerChar('Y', 'N');
         } while (again == 'Y');
     }
 
-    private static void consultAllSessions(Controller Lcontroler) {
-        Map<String, ExamSession> sessions = Lcontroler.consultAllSessions();
-        for (ExamSession session : sessions.values()) {
-            System.out.println(session);
-        }
-    }
 
     private static void getAllTeachingUnits(Controller Lcontroler) {
         Map<String, TeachingUnit> units = Lcontroler.getAllTeachingUnits();
@@ -368,14 +371,18 @@ public class Main {
 
         
         if (datosValidos) {
-            do {
-                System.out.print("\nIntroduce el ID del statement: ");
-                statementId = Utilidades.leerInt();
-                if (!Lcontroler.CheckStatement(statementId)) {
-                    System.out.println("El statement " + statementId + " no existe. Por favor, introduce un ID válido.");
+            while (statementId == -1) {
+                try {
+                    System.out.print("\nIntroduce el ID del statement: ");
+                    statementId = Utilidades.leerInt();
+                    if (!Lcontroler.CheckStatement(statementId)) {
+                        throw new NotFoundExcption();
+                    }
+                } catch (NotFoundExcption e) {
+                    System.err.println(e.getMessage());
                     statementId = -1; // Reset para seguir en el bucle
                 }
-            } while (statementId == -1);
+            }
         }
 
         if (datosValidos) {

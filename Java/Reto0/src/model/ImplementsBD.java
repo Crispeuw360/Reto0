@@ -328,37 +328,6 @@ public class ImplementsBD implements WorkerDAO {
         }
         return creado;
     }
-
-    @Override
-    public Map<String, ExamSession> consultAllSessions() {
-        ResultSet rs = null;
-        ExamSession session;
-        Map<String, ExamSession> sessionsList = new TreeMap<>();
-
-        this.openConnection();
-
-        try {
-            stmt = con.prepareStatement(SQLGETALLSESSIONS);
-            rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                session= new ExamSession();
-                session.setCourse(rs.getString("course"));
-                session.setDate(rs.getDate("Edate"));
-                session.setDescription(rs.getString("descripcion"));
-                session.setSession(rs.getString("Esession"));
-                session.setStatementId(rs.getInt("id_statement"));
-                sessionsList.put(session.getSession(), session);
-            }
-            rs.close();
-            stmt.close();
-            con.close();
-        } catch (SQLException e) {
-            System.out.println("Error de SQL");
-            e.printStackTrace();
-        }
-        return sessionsList;
-    }
     
     public Map<String, TeachingUnit> getAllTeachingUnits() {
         ResultSet rs = null;
@@ -389,6 +358,7 @@ public class ImplementsBD implements WorkerDAO {
         }
         return unitsList;
     }
+    
     public Map<String, Statement> getAllStatement() {
         ResultSet rs = null;
         Statement statement;
@@ -418,6 +388,7 @@ public class ImplementsBD implements WorkerDAO {
         }
         return statementList;
     }
+    
     public boolean addStatementToTeachingUnit(int statementId, int teachingUnitId){
         this.openConnection();
         try {
