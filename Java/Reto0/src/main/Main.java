@@ -7,6 +7,7 @@ package main;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.TreeMap;
 import java.sql.Date;
 
 import controller.Controller;
@@ -48,13 +49,13 @@ public class Main {
                     CreateStatement(Lcontroler);
                     break;
                 case 4:
-
+                    getStatementByUnit(Lcontroler);
                     break;
                 case 5:
-
+                    consultSessionsByStatement(Lcontroler);
                     break;
                 case 6:
-
+                    viewTextDocumentFromStatement(Lcontroler);
                     break;
             }
         } while (menu != 0);
@@ -226,4 +227,164 @@ public class Main {
         }
     }
 
+    private static void getStatementByUnit(Controller Lcontroler){
+        boolean datosValidos=true;
+        System.out.println("Consult Statement by id: ");
+        
+        Map<String, TeachingUnit>units = Lcontroler.getAllTeachingUnits();
+        if (units.isEmpty()){
+            System.out.println("No hay unidades disponibles");
+            datosValidos=false;
+        }
+        
+        TreeMap <Integer, TeachingUnit> byId = new TreeMap<>();
+        for (TeachingUnit u : units.values()) {
+            byId.put(u.getId(), u);
+        }
+        if (datosValidos){
+            System.out.println("Units: ");
+            if (datosValidos) {
+                System.out.println("Unidades disponibles");
+                byId.forEach((id, u) ->
+                    System.out.println(" " + id + " : " + u.getAcronym() + " | " + u.getTitle()));
+            }
+        }
+        int unitId = -1;
+        if (datosValidos) {
+            try {
+                System.out.print("\nIntroduce el ID de la unidad: ");
+                unitId = Utilidades.leerInt();
+            } catch (NumberFormatException e) {
+                System.out.println("Debes introducir un número entero.");
+                datosValidos = false;
+            }
+        }
+
+        // 3) Validar que la unidad existe
+        if (datosValidos && !Lcontroler.CheckTeachingUnit(unitId)) {
+            System.out.println("La unidad " + unitId + " no existe.");
+            datosValidos = false;
+        }
+        
+        if (datosValidos){
+            Map<Integer, Statement > statements =Lcontroler.getStatementByUnit(unitId);
+            if(statements.isEmpty()){
+                System.out.println("No hay ningun enunciado que pertenezca a la unidad: "+unitId);
+            }
+            else {
+            System.out.println("\nEnunciados de la unidad " + unitId );
+            for (Statement s : statements.values()) {
+                System.out.printf(" - [%d] %s (Nivel: %s, Disponible: %s, Path: %s)%n",
+                        s.getId(),
+                        s.getDescription(),
+                        s.getLevel(),
+                        s.isAvailability(),
+                        s.getRuta());
+            }
+        }
+        }
+    }
+
+    private static void consultSessionsByStatement(Controller Lcontroler) {
+        boolean datosValidos = true;
+        int statementId = -1;
+        System.out.println("Consult sessions by statement ID: ");
+        
+        // Mostrar todos los statements disponibles
+        Map<String, Statement> statements = Lcontroler.getAllStatement();
+        if (statements.isEmpty()) {
+            System.out.println("No hay statements disponibles");
+            datosValidos = false;
+        }
+
+        TreeMap<Integer, Statement> byId = new TreeMap<>();
+        for (Statement s : statements.values()) {
+            byId.put(s.getId(), s);
+        }
+
+        if (datosValidos) {
+            System.out.println("Statements disponibles:");
+            for (Map.Entry<Integer, Statement> entry : byId.entrySet()) {
+                int id = entry.getKey();
+                Statement statement = entry.getValue();
+                System.out.println(" " + id + " : " + statement.getDescription() + " (Nivel: " + statement.getLevel() + ")");
+            }
+        }
+
+        
+        if (datosValidos) {
+            do {
+                System.out.print("\nIntroduce el ID del statement: ");
+                statementId = Utilidades.leerInt();
+                if (!Lcontroler.CheckStatement(statementId)) {
+                    System.out.println("El statement " + statementId + " no existe. Por favor, introduce un ID válido.");
+                    statementId = -1; // Reset para seguir en el bucle
+                }
+            } while (statementId == -1);
+        }
+
+        if (datosValidos) {
+            Map<String, ExamSession> sessions = Lcontroler.getSessionsFromStatement(statementId);
+            if (sessions.isEmpty()) {
+                System.out.println("No hay sesiones que utilicen el statement: " + statementId);
+            } else {
+                System.out.println("\nSesiones que utilizan el statement " + statementId + ":");
+                for (ExamSession session : sessions.values()) {
+                    System.out.printf(" - [%s] %s | Curso: %s | Fecha: %s%n",
+                            session.getSession(),
+                            session.getDescription(),
+                            session.getCourse(),
+                            session.getDate());
+                }
+            }
+        }
+    }
+
+    private static void viewTextDocumentFromStatement(Controller Lcontroler) {
+        boolean datosValidos = true;
+        int statementId = -1;
+        System.out.println("Consult sessions by statement ID: ");
+        
+        // Mostrar todos los statements disponibles
+        Map<String, Statement> statements = Lcontroler.getAllStatement();
+        if (statements.isEmpty()) {
+            System.out.println("No hay statements disponibles");
+            datosValidos = false;
+        }
+
+        TreeMap<Integer, Statement> byId = new TreeMap<>();
+        for (Statement s : statements.values()) {
+            byId.put(s.getId(), s);
+        }
+
+        if (datosValidos) {
+            System.out.println("Statements disponibles:");
+            for (Map.Entry<Integer, Statement> entry : byId.entrySet()) {
+                int id = entry.getKey();
+                Statement statement = entry.getValue();
+                System.out.println(" " + id + " : " + statement.getDescription() + " (Nivel: " + statement.getLevel() + ")");
+            }
+        }
+
+        
+        if (datosValidos) {
+            do {
+                System.out.print("\nIntroduce el ID del statement: ");
+                statementId = Utilidades.leerInt();
+                if (!Lcontroler.CheckStatement(statementId)) {
+                    System.out.println("El statement " + statementId + " no existe. Por favor, introduce un ID válido.");
+                    statementId = -1; // Reset para seguir en el bucle
+                }
+            } while (statementId == -1);
+        }
+
+        if (datosValidos) {
+            String ruta = Lcontroler.viewTextDocumentFromStatement(statementId);
+            if (ruta == null) {
+                System.out.println("No se encontró el statement con ID: " + statementId);
+            } else {
+                System.out.println("\nRuta del documento: " + ruta);
+            }
+        }
+    }
 }

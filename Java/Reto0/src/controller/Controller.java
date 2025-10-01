@@ -27,8 +27,8 @@ public class Controller {
      public boolean createStatement(Statement statement){
          return dao.createStatement(statement);
      }
-     public ExamSession getSessionFromStatement(int statementid){
-         return dao.getSessionFromStatement(statementid);
+     public Map<String, ExamSession> getSessionsFromStatement(int statementid){
+         return dao.getSessionsFromStatement(statementid);
      }
      public Statement getStatementById(int id){
          return dao.getStatementById(id);
@@ -55,5 +55,12 @@ public class Controller {
      public boolean addStatementToTeachingUnit(int statementId, int teachingUnitId){
          return dao.addStatementToTeachingUnit(statementId, teachingUnitId);
      }
+     public Map<Integer, Statement> getStatementByUnit(int unitId){
+        return dao.getStatementByUnit(unitId);
+    }
+
+    public String viewTextDocumentFromStatement(int statementId){
+        return dao.viewTextDocumentFromStatement(statementId);
+    }
      
 }

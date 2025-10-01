@@ -18,9 +18,11 @@ public interface WorkerDAO {
     
     public boolean createStatement(Statement statement);
     
-    public ExamSession getSessionFromStatement(int statementid);
+    public Map<String, ExamSession> getSessionsFromStatement(int statementid);
     
     public Statement getStatementById(int id);
+
+    public Map<Integer, Statement> getStatementByUnit(int unitId);
     
     public boolean CheckSession(String session);
 
@@ -30,6 +32,7 @@ public interface WorkerDAO {
 
     public boolean addStatementToTeachingUnit(int statementId, int teachingUnitId);
 
+    public String viewTextDocumentFromStatement(int statementId);
 
     /**
      * Retrieves all clients from the database.

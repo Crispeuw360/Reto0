@@ -7,7 +7,6 @@ package model;
 
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -45,7 +44,7 @@ public class ImplementsBD implements WorkerDAO {
     final String SQLINSERTUNIT_STATEMENT = "INSERT INTO Unit_statement(idU,idS)   VALUES  (?,?);";
     
     final String SQLVIEWSTATEMENTBYID = "SELECT * FROM statement WHERE id IN(SELECT idS FROM unit_statement WHERE idU IN(SELECT id FROM unit WHERE id=?));";;
-    final String SQLGETSESSIONFROMSTATEMENT = "SELECT Esession FROM statement WHERE id=?;";
+    final String SQLGETSESSIONFROMSTATEMENT = "SELECT * FROM sessionE WHERE id_statement = ?;";
     final String SQLCHECKSESSION = "SELECT Esession FROM sessionE WHERE Esession=?;";
     final String SQLCHECKTEACHINGUNIT = "SELECT id FROM unit WHERE id=?;";
     final String SQLCHECKSTATEMENT = "SELECT id FROM statement WHERE id=?;";
@@ -53,6 +52,8 @@ public class ImplementsBD implements WorkerDAO {
     final String SQLGETALLUNITS = "SELECT * FROM unit;";
     final String SQLGETALLSESSIONS = "SELECT * FROM sessionE;";
     final String SQLGETALLSTATEMENTS = "SELECT * FROM statement ;";
+    final String SQLGETSTATEMENTS_BY_UNIT = "SELECT * FROM statement " + "WHERE id IN (SELECT idS FROM Unit_Statement WHERE idU = ?);";
+    
 
     /**
      * Constructs a new ImplementsBD instance and loads database configuration.
@@ -80,41 +81,36 @@ public class ImplementsBD implements WorkerDAO {
     }
 
 
-    /**
-     * Retrieves a examSession by username.
-     *
-     * @param statementid The username to search for
-     * @return The Worker object if found, null otherwise
-     */
     @Override
-    public ExamSession getSessionFromStatement(int statementid) {
-        ExamSession foundSession = null;
+    public Map<String, ExamSession> getSessionsFromStatement(int statementid) {
+        ResultSet rs = null;
+        Map<String, ExamSession> sessionsList = new TreeMap<>();
         this.openConnection();
 
         try {
             stmt = con.prepareStatement(SQLGETSESSIONFROMSTATEMENT);
             stmt.setInt(1, statementid);
-            ResultSet resultado = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
-            if (resultado.next()) {
-                 
-                
-                String session = resultado.getString("Esession");
-                String description = resultado.getString("descripcion");
-                Date date = resultado.getDate("Edate");
-                String course = resultado.getString("course");
-                int statementId = resultado.getInt("id_statement");
+            while (rs.next()) {
+                ExamSession session = new ExamSession();
+                session.setSession(rs.getString("Esession"));
+                session.setDescription(rs.getString("descripcion"));
+                session.setDate(rs.getDate("Edate"));
+                session.setCourse(rs.getString("course"));
+                session.setStatementId(rs.getInt("id_statement"));
 
-                foundSession = new ExamSession(session, description, date, course,statementId);
+                sessionsList.put(session.getSession(), session);
             }
 
+            rs.close();
             stmt.close();
             con.close();
         } catch (SQLException e) {
-            System.out.println("Error al verificar credenciales: " + e.getMessage());
+            System.out.println("Error al obtener sesiones: " + e.getMessage());
         }
 
-        return foundSession;
+        return sessionsList;
     }
 
     /**
@@ -152,6 +148,40 @@ public class ImplementsBD implements WorkerDAO {
 
         return foundStatement;
     }
+
+    public Map<Integer, Statement> getStatementByUnit(int unitId) {
+        ResultSet rs = null;
+        Map<Integer, Statement> statementList = new TreeMap<>();
+        this.openConnection();
+
+        try {
+            stmt = con.prepareStatement(SQLGETSTATEMENTS_BY_UNIT);
+            stmt.setInt(1, unitId);
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Statement st = new Statement();
+                st.setId(rs.getInt("id"));
+                st.setDescription(rs.getString("description"));
+                st.setLevel(Level.valueOf(rs.getString("Dlevel")));
+                st.setAvailability(rs.getBoolean("available"));
+                st.setRuta(rs.getString("path"));
+                // si tu modelo Statement guarda la sesión:
+                // st.setSession(rs.getString("Esession"));
+
+                statementList.put(st.getId(), st);
+            }
+
+            rs.close();
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println("Error de SQL en getStatementByUnit: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return statementList;
+    }
+
     
 
     /**
@@ -405,6 +435,32 @@ public class ImplementsBD implements WorkerDAO {
         return false;
     }
     
+    public String viewTextDocumentFromStatement(int statementId){
+        Statement foundStatement = null;
+        this.openConnection();
+        try {
+            stmt = con.prepareStatement(SQLVIEWSTATEMENTBYID);
+            stmt.setInt(1, statementId);
+            ResultSet resultado = stmt.executeQuery();
 
+            if (resultado.next()) {
+                int idS = resultado.getInt("id");
+                String description = resultado.getString("acronym");
+                String levelStr = resultado.getString("Dlevel");
+                boolean avaliable = resultado.getBoolean("avaliable");
+                String path = resultado.getString("path");
+                Level dLevel = Level.valueOf(levelStr);
+                
+                foundStatement = new Statement(idS, description, dLevel, avaliable, path);
+            }
+
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            System.out.println("Error al obtener el modelo: " + e.getMessage());
+        }
+
+        return foundStatement.getRuta();
+    }
     
 }
