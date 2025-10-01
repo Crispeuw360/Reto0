@@ -416,9 +416,9 @@ public class ImplementsBD implements WorkerDAO {
 
             if (resultado.next()) {
                 int idS = resultado.getInt("id");
-                String description = resultado.getString("acronym");
+                String description = resultado.getString("description");
                 String levelStr = resultado.getString("Dlevel");
-                boolean avaliable = resultado.getBoolean("avaliable");
+                boolean avaliable = resultado.getBoolean("available");
                 String path = resultado.getString("path");
                 Level dLevel = Level.valueOf(levelStr);
                 
